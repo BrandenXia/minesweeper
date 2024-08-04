@@ -61,6 +61,8 @@ int countSurroundingMines(Game *game, int x, int y);
 
 void handleReveal(Game *game, int x, int y);
 
+bool checkWin(Game *game);
+
 int main(void) {
     Game game;
 
@@ -130,7 +132,7 @@ void DrawGame(Game *game) {
     FORMAT_TEXT(MINE_INFO, MINE_COUNT - minesFlagged);
     DRAW_TEXT(buffer, PADDING * 1.5, PADDING * 1.5);
 
-    if (minesFlagged == MINE_COUNT) {
+    if (checkWin(game)) {
         game->isGameWon = true;
         DRAW_TEXT(WIN_TEXT, CALC_CENTER(WINDOW_WIDTH, WIN_TEXT), PADDING * 1.5);
     }
@@ -186,4 +188,11 @@ void handleReveal(Game *game, int x, int y) {
             if (x + i < 0 || x + i >= BOARD_WIDTH || y + j < 0 || y + j >= BOARD_HEIGHT) continue;
             if (!game->board[x + i][y + j].isRevealed) handleReveal(game, x + i, y + j);
         }
+}
+
+bool checkWin(Game *game) {
+    for (int x = 0; x < BOARD_WIDTH; x++)
+        for (int y = 0; y < BOARD_HEIGHT; y++)
+            if (!game->mines[x][y] && !game->board[x][y].isRevealed) return false;
+    return true;
 }
